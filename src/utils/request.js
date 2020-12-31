@@ -10,6 +10,7 @@ const service = axios.create({
   timeout: 5000 // request timeout
 })
 
+service.defaults.validateStatus = s => [200, 201, 203, 204].includes(s)
 // request interceptor
 service.interceptors.request.use(
   config => {
@@ -19,7 +20,8 @@ service.interceptors.request.use(
       // let each request carry token
       // ['X-Token'] is a custom headers key
       // please modify it according to the actual situation
-      config.headers['X-Token'] = getToken()
+      // config.headers['X-Token'] = getToken()
+      config.headers['authorization'] = 'Bearer ' + getToken()
     }
     return config
   },
@@ -45,8 +47,8 @@ service.interceptors.response.use(
   response => {
     const res = response.data
 
-    // if the custom code is not 20000, it is judged as an error.
-    if (res.code !== 20000) {
+    // if the custom code is larger 300, it is judged as an error.
+    if (response.status !== 200 && response.status !== 201 && response.status !== 204) {
       Message({
         message: res.message || 'Error',
         type: 'error',
@@ -54,6 +56,7 @@ service.interceptors.response.use(
       })
 
       // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
+      //这块没怎么用到
       if (res.code === 50008 || res.code === 50012 || res.code === 50014) {
         // to re-login
         MessageBox.confirm('You have been logged out, you can cancel to stay on this page, or log in again', 'Confirm logout', {
@@ -72,9 +75,19 @@ service.interceptors.response.use(
     }
   },
   error => {
+    let msg = '接口请求错误【默认】'
+    switch (error.response.status) {
+      case 422:
+        msg = error.response.data.message
+        break;
+      default:
+        msg = error.message
+        break;
+    }
+    console.log(error.response) // for debug
     console.log('err' + error) // for debug
     Message({
-      message: error.message,
+      message: msg,
       type: 'error',
       duration: 5 * 1000
     })
