@@ -36,3 +36,22 @@ export function deleteRole(id) {
     method: 'delete'
   })
 }
+
+export function deleteRol1(id) {
+  return request({
+    url: `/vue-element-admin/role/${id}`,
+    method: "delete"
+  });
+}
+export function deleteRol5(id) {
+  return request({
+    url: `/vue-element-admin/role/${id}`,
+    method: "delete"
+  });
+}
+export function deleteRol3(id) {
+  return request({
+    url: `/vue-element-admin/role/${id}`,
+    method: "delete"
+  });
+}
