@@ -49,7 +49,7 @@ export function deleteRol5(id) {
     method: "delete"
   });
 }
-export function deleteRol3(id) {
+export function deleteRol7(id) {
   return request({
     url: `/vue-element-admin/role/${id}`,
     method: "delete"
